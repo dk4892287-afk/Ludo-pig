@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐷 Pig Ludo Game 🎲</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .game-board {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .pig-dice {
+            font-size: 120px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            user-select: none;
+            display: inline-block;
+        }
+
+        .pig-dice:hover {
+            transform: scale(1.1);
+        }
+
+        .pig-dice:active {
+            transform: scale(0.95);
+        }
+
+        .dice-result {
+            margin-top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+            height: 30px;
+        }
+
+        .dice-value {
+            font-size: 48px;
+            color: #764ba2;
+            margin: 10px 0;
+        }
+
+        .instruction {
+            color: #888;
+            font-size: 14px;
+            margin-top: 20px;
+        }
+
+        .score-board {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .player {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            transition: transform 0.2s ease;
+        }
+
+        .player.active {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .player-name {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .player-score {
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .btn-roll {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-roll:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-roll:active {
+            transform: translateY(0);
+        }
+
+        .btn-reset {
+            background: #ff6b6b;
+            color: white;
+            padding: 12px 20px;
+        }
+
+        .btn-reset:hover {
+            background: #ff5252;
+            transform: translateY(-2px);
+        }
+
+        .history {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            max-height: 150px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+
+        .history-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .history-item {
+            color: #666;
+            font-size: 12px;
+            padding: 5px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .pig-dice {
+                font-size: 80px;
+            }
+
+            .score-board {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🐷 Pig Ludo Game 🎲</h1>
+        <p class="subtitle">Click the pig to roll the dice!</p>
+
+        <div class="score-board">
+            <div class="player active" id="player1">
+                <div class="player-name">Player 1</div>
+                <div class="player-score" id="score1">0</div>
+            </div>
+            <div class="player" id="player2">
+                <div class="player-name">Player 2</div>
+                <div class="player-score" id="score2">0</div>
+            </div>
+        </div>
+
+        <div class="game-board">
+            <div class="pig-dice" id="pigDice">🐷</div>
+            <div class="dice-result">
+                <div id="resultText"></div>
+                <div class="dice-value" id="diceValue"></div>
+            </div>
+            <div class="instruction">← Click the pig to roll!</div>
+        </div>
+
+        <div class="controls">
+            <button class="btn-roll" id="rollBtn">🎲 Roll Dice</button>
+            <button class="btn-reset" id="resetBtn">Reset Game</button>
+        </div>
+
+        <div class="history">
+            <div class="history-title">📋 Roll History</div>
+            <div id="historyList"></div>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        const gameState = {
+            player1Score: 0,
+            player2Score: 0,
+            currentPlayer: 1,
+            rollHistory: [],
+            gameActive: true
+        };
+
+        const MAX_SCORE = 20;
+
+        // DOM elements
+        const pigDice = document.getElementById('pigDice');
+        const rollBtn = document.getElementById('rollBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const diceValue = document.getElementById('diceValue');
+        const resultText = document.getElementById('resultText');
+        const score1 = document.getElementById('score1');
+        const score2 = document.getElementById('score2');
+        const historyList = document.getElementById('historyList');
+        const player1 = document.getElementById('player1');
+        const player2 = document.getElementById('player2');
+
+        // Roll dice function
+        function rollDice() {
+            return Math.floor(Math.random() * 6) + 1;
+        }
+
+        // Add to history
+        function addToHistory(player, value) {
+            const timestamp = new Date().toLocaleTimeString();
+            gameState.rollHistory.unshift({
+                player,
+                value,
+                time: timestamp
+            });
+
+            // Keep only last 10 rolls
+            if (gameState.rollHistory.length > 10) {
+                gameState.rollHistory.pop();
+            }
+
+            updateHistory();
+        }
+
+        // Update history display
+        function updateHistory() {
+            historyList.innerHTML = gameState.rollHistory
+                .map(roll => `<div class="history-item">P${roll.player}: ${roll.value} 🎲 (${roll.time})</div>`)
+                .join('');
+        }
+
+        // Perform roll
+        function performRoll() {
+            if (!gameState.gameActive) return;
+
+            const roll = rollDice();
+            const currentScore = gameState.currentPlayer === 1 ? gameState.player1Score : gameState.player2Score;
+            const newScore = currentScore + roll;
+
+            // Update score
+            if (gameState.currentPlayer === 1) {
+                gameState.player1Score = newScore > MAX_SCORE ? MAX_SCORE : newScore;
+            } else {
+                gameState.player2Score = newScore > MAX_SCORE ? MAX_SCORE : newScore;
+            }
+
+            // Add to history
+            addToHistory(gameState.currentPlayer, roll);
+
+            // Display result
+            displayResult(roll, gameState.currentPlayer);
+
+            // Update UI
+            updateScore();
+
+            // Check for winner
+            if (gameState.player1Score === MAX_SCORE || gameState.player2Score === MAX_SCORE) {
+                endGame();
+            } else {
+                // Switch player after a delay
+                setTimeout(switchPlayer, 800);
+            }
+        }
+
+        // Display result with animation
+        function displayResult(roll, player) {
+            diceValue.textContent = roll;
+            resultText.textContent = `Player ${player} rolled:`;
+            
+            pigDice.style.transform = 'rotate(360deg) scale(1.2)';
+            setTimeout(() => {
+                pigDice.style.transform = 'scale(1)';
+            }, 600);
+        }
+
+        // Update score display
+        function updateScore() {
+            score1.textContent = gameState.player1Score;
+            score2.textContent = gameState.player2Score;
+        }
+
+        // Switch player
+        function switchPlayer() {
+            gameState.currentPlayer = gameState.currentPlayer === 1 ? 2 : 1;
+            updatePlayerHighlight();
+        }
+
+        // Update player highlight
+        function updatePlayerHighlight() {
+            if (gameState.currentPlayer === 1) {
+                player1.classList.add('active');
+                player2.classList.remove('active');
+            } else {
+                player1.classList.remove('active');
+                player2.classList.add('active');
+            }
+        }
+
+        // End game
+        function endGame() {
+            gameState.gameActive = false;
+            const winner = gameState.player1Score === MAX_SCORE ? 1 : 2;
+            resultText.textContent = `🎉 Player ${winner} wins! 🎉`;
+            diceValue.textContent = `Score: ${MAX_SCORE}`;
+        }
+
+        // Reset game
+        function resetGame() {
+            gameState.player1Score = 0;
+            gameState.player2Score = 0;
+            gameState.currentPlayer = 1;
+            gameState.rollHistory = [];
+            gameState.gameActive = true;
+
+            diceValue.textContent = '';
+            resultText.textContent = '';
+            updateScore();
+            updateHistory();
+            updatePlayerHighlight();
+        }
+
+        // Event listeners
+        pigDice.addEventListener('click', performRoll);
+        rollBtn.addEventListener('click', performRoll);
+        resetBtn.addEventListener('click', resetGame);
+
+        // Initialize
+        updateScore();
+        updatePlayerHighlight();
+    </script>
+</body>
+</html>
